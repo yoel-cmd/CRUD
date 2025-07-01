@@ -29,8 +29,12 @@ function creatFIleFunc(answer) {
             answer.id=maxId+1
         }
         arr.push(answer);
-
-       writeFileFunc(arr)
+        
+        
+         writeFile('db.txt', JSON.stringify(arr,null,2), (err) => {
+                if (err) console.log(err);
+                });
+                console.log("created");
     });
 }
 
@@ -38,22 +42,27 @@ function readFileFunc() {
     readFile('db.txt', 'utf8', (err, data) => {
         if (err) return console.log(err);
         console.log(data); 
+        showMenu();
+
     });
 }
 
 function writeFileFunc(arr){
-    writeFile('db.txt', JSON.stringify(arr,null,2), (err) => {
-            if (err) console.log(err);
-            
-             
-            });
+    return new Promise((resolve,reject)=>{
+        writeFile('db.txt', JSON.stringify(arr,null,2), (err) => {
+              if (err) return reject(err);
+                resolve("update");
+                });
+    })
 }
 
 function updateFunctio(params){
     return new Promise((resolve,reject)=>{
         readFile('db.txt','utf8',(err,data)=>{
             const arr= JSON.parse(data);
+            
              let found = false;
+
 
             for(let i=0;i<arr.length;i++){
                 if(arr[i].id===params.id){
@@ -65,8 +74,10 @@ function updateFunctio(params){
               if (!found) {
                 return reject('ID not found');
             }
-           writeFileFunc(arr);
-           resolve("update")
+           writeFileFunc(arr)
+           .then(() => resolve('Update successful'))
+            .catch(err => reject('Write failed: ' + err));
+        
         })
     })
 }
@@ -88,7 +99,8 @@ return new Promise((resolve,reject)=>{
                 return reject('ID not found');
             }
             writeFileFunc(arr)
-            resolve('delete')
+            .then(() => resolve('Update successful'))
+        .catch(err => reject('Write failed: ' + err));
         })
 
 })
@@ -107,12 +119,12 @@ function handleChoice(choice) {
         case '2':
             console.log('read');
             readFileFunc();
-            showMenu();
             break;
         case '3':
             rl.question('Enter ID and score in proper Jason format:("id":value,"score":value) ', (answer) => {  
-                 const res = JSON.parse(answer);                         
-                    updateFunctio(res)
+                 const res = JSON.parse(answer);  
+                 if(res.score<100&&res.score>=0) {                     
+                    updateFunctio(res)                  
                     .then((msg)=>{
                         console.log(msg);
                         showMenu();
@@ -121,6 +133,11 @@ function handleChoice(choice) {
                         console.log(err);
                         showMenu();    
                     })
+                }else{
+                    console.log('scor is invalid');
+                    showMenu();
+
+                }
             });
             break;
         case '4':
@@ -178,86 +195,3 @@ showMenu();
 
 
 
-//--------------------------------------------------------------
-// import { log } from "node:console";
-// import { readdir, readFile, stat, writeFile } from "node:fs";
-// import readline from 'readline';
-
-// let index = 0;
-// const rl = readline.createInterface({
-//     input: process.stdin,
-//     output: process.stdout
-// });
-
-
-
-
-// function WriteFIleFunc(answer) {
-//     readFile('db.txt', 'utf8', (err, data) => {
-//         if (err) console.log(err);
-//         const arr = JSON.parse(data)
-//         console.log(index);
-//         index += 1;
-
-//         arr.push(answer);
-//         console.log('arr.push(answer)');
-//         console.log(arr);
-
-//         writeFile('db.txt', JSON.stringify(arr, null, 2), (err) => {
-//             if (err) {
-//                 console.log(err);
-//             }
-//             else {
-//                 console.log('yes');
-//             }
-//         })
-//         // console.log(data); 
-//     })
-// }
-
-
-// function readFileFunc() {
-//     readFile('db.txt', 'utf8', (err, data) => {
-//         if (err) console.log(err);
-//         console.log(data);
-//     })
-// }
-
-
-// function handleChoice(choice) {
-//     while(choice!=0){
-//     switch (choice) {
-//         case '1':
-//             rl.question('Insert json Key:Value ', (answer) => {
-//                 const res = JSON.parse(answer)
-//                 rl.close();
-//                 WriteFIleFunc(res)
-//             });
-//             break;
-//         case '2':
-//             console.log(' create');
-//             // כאן תקרא את הקובץ ותדפיס את התוכן
-//             break;
-//         case '3':
-//             console.log(' update');
-//             // כאן תבקש מזהה ותשנה את הרשומה
-//             break;
-//         case '4':
-//             console.log('delete');
-//             // כאן תבקש מזהה ותמחק את הרשומה
-//             break;
-//             case '0':
-//             console.log('exit');
-//             // כאן תבקש מזהה ותמחק את הרשומה
-//             break;
-//         default:
-//             console.log('בחירה לא חוקית, נסה שוב');
-//             showMenu(); // חזרה לתפריט במקרה של שגיאה
-//             return;
-//     }
-    
-
-    
-// }
-
-// }
