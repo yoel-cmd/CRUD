@@ -110,6 +110,7 @@ The system uses both callbacks and promises to demonstrate different asynchronou
 User input is handled via the readline module.
 
 IDs are generated automatically – the user only enters name and grade.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 📘 README.md (גרסה בעברית)
 מערכת לניהול סטודנטים - CLI
