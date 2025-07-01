@@ -8,7 +8,9 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-function WriteFIleFunc(answer) {
+
+
+function creatFIleFunc(answer) {
      
     readFile('db.txt', 'utf8', (err, data) => {
         if (err) return console.log(err);
@@ -28,11 +30,7 @@ function WriteFIleFunc(answer) {
         }
         arr.push(answer);
 
-        writeFile('db.txt', JSON.stringify(arr,null,2), (err) => {
-            if (err) console.log(err);
-            else console.log('yes');
-             
-        });
+       writeFileFunc(arr)
     });
 }
 
@@ -41,6 +39,14 @@ function readFileFunc() {
         if (err) return console.log(err);
         console.log(data); 
     });
+}
+
+function writeFileFunc(arr){
+    writeFile('db.txt', JSON.stringify(arr,null,2), (err) => {
+            if (err) console.log(err);
+            
+             
+            });
 }
 
 function updateFunctio(params){
@@ -54,27 +60,47 @@ function updateFunctio(params){
                     arr[i].score=params.score;
                     found = true;
                     break;
-                }
-              
+                }             
             }
               if (!found) {
                 return reject('ID not found');
             }
-            writeFile('db.txt', JSON.stringify(arr,null,2), (err) => {
-            if (err) console.log(err);
-            resolve('Score updated');
-             
-            });
+           writeFileFunc(arr);
+           resolve("update")
         })
     })
+}
+
+function delteStudent(js){
+return new Promise((resolve,reject)=>{
+    readFile('db.txt','utf8',(err,data)=>{
+            const arr= JSON.parse(data);
+            let found = false;
+
+            for(let i=0;i<arr.length;i++){
+                if(arr[i].id===js.id){
+                    arr.splice(i, 1);
+                    found = true;
+                    break;
+                }             
+            }
+              if (!found) {
+                return reject('ID not found');
+            }
+            writeFileFunc(arr)
+            resolve('delete')
+        })
+
+})
+
 }
 
 function handleChoice(choice) {
     switch (choice) {
         case '1':
-            rl.question('(key:value,score:value): ', (answer) => {               
+            rl.question('Enter a name and grade in proper Jason format.("name":"value","score":value): ', (answer) => {               
                     const res = JSON.parse(answer);
-                    WriteFIleFunc(res);                
+                    creatFIleFunc(res);                
                     showMenu();
             });
             break;
@@ -84,7 +110,7 @@ function handleChoice(choice) {
             showMenu();
             break;
         case '3':
-            rl.question('enter id and score: ', (answer) => {  
+            rl.question('Enter ID and score in proper Jason format:("id":value,"score":value) ', (answer) => {  
                  const res = JSON.parse(answer);                         
                     updateFunctio(res)
                     .then((msg)=>{
@@ -98,8 +124,18 @@ function handleChoice(choice) {
             });
             break;
         case '4':
-            console.log('delte');
-            showMenu();
+            rl.question('Enter the deletion ID in proper Jason format.("id":id)', (answer) => {  
+                 const res = JSON.parse(answer);                         
+                    delteStudent(res)
+                    .then((msg)=>{
+                        console.log(msg);
+                        showMenu();
+                    })
+                    .catch((err)=>{
+                        console.log(err);
+                        showMenu();    
+                    })
+            });                   
             break;
         case '0':
             console.log('exit');

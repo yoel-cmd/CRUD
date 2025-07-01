@@ -1,17 +1,12 @@
 [
   {
     "name": "yoel",
-    "score": 56,
+    "score": 32,
     "id": 1
   },
   {
     "name": "yoel",
-    "score": 55,
+    "score": 40,
     "id": 2
-  },
-  {
-    "name": "yoel",
-    "score": 55,
-    "id": 3
   }
 ]
